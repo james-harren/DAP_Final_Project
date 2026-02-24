@@ -1,13 +1,12 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/YlfKWlZ5)
-# Fire Perimeter Analysis
+# Chicago Energy Inefficiency Analysis
 
-This project processes and visualizes historical fire perimeter data and Canadian CPI data.
+This project analyzes where energy inefficient buildings are in the city, and 
 
 ## Setup
 
 ```bash
 conda env create -f environment.yml
-conda activate fire_analysis
+conda activate chi_energy_eff
 ```
 
 ## Project Structure
@@ -15,14 +14,11 @@ conda activate fire_analysis
 ```
 data/
   raw-data/           # Raw data files
-    fire.csv          # Historical fire perimeter data
-    canadian_cpi.csv  # Canadian Consumer Price Index data
+    WHAT ARE
   derived-data/       # Filtered data and output plots
-    fire_filtered.gpkg  # Fire data filtered to post-2015
-    cpi_filtered.csv    # CPI data filtered to 2020 onwards
+    WHAT ARE
 code/
-  preprocessing.py    # Filters fire and CPI data
-  plot_fires.py       # Plots fire perimeters
+  preprocessing.py    # What does it do?
 ```
 
 ## Usage
@@ -36,3 +32,24 @@ code/
    ```bash
    python code/plot_fires.py
    ```
+   
+## Streamlit App
+
+LINK
+
+## Data Sources
+
+1. Chicago Energy Usage 2010 database. https://data.cityofchicago.org/Environment-Sustainable-Development/Energy-Usage-2010/8yq3-m6wp/about_data 
+
+2. Census data (U.S. Census Bureau, 2006-2010 American Community Survey) 
+- Downloaded from... https://data.census.gov/ filtering for Cook County + Census Tracts + Income and Poverty and then downloading for S1903 "Median Income in the Past 12 Months"
+ 
+- Cleaned to remove extraneous columns to only include the following:
+GEO_ID	
+NAME	
+S1903_C01_001E	RENAMED TO Num_HH (i.e. Number of Households)
+S1903_C02_001E	RENAMED TO Med_Inc_HH (i.e. Median Household Income)
+
+- Community Areas https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas/igwz-8jzy/about_data
+- Census blocks https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Blocks-2010/mfzt-js4n 
+

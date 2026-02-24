@@ -1,0 +1,74 @@
+---
+title: "Analysis of Energy Inefficiency in Chicago"
+author: "James Harren (GitHub user: james-harren)"
+date: "Section 1 - Mondays & Wednesdays at 9am"
+format:
+  pdf:
+    include-in-header:
+      text: |
+        % Enable wrapping for Pandoc code blocks in PDF
+        \usepackage{fvextra}
+        \usepackage{float}
+        \usepackage{makecell}
+        \usepackage{booktabs}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+editor: source
+execute-dir: project
+execute: 
+    echo: true
+---
+
+## Background
+
+The City's Climate Action Plan: https://www.chicago.gov/content/dam/city/sites/climate-action-plan/documents/Chicago-CAP-071822.pdf 
+
+"Chicago’s residential, commercial, and industrial buildings account for nearly 69% of the City’s carbon footprint."
+"It is important to prioritize energy efficiency retrofits prior to electrification and the transition to renewable energy to lower overall costs and maximize savings."
+
+Goals: 
+Residential buildings with fewer than 4 units, 50% by 2040. 93% of Chicagoans live in these buildings which account for 14% of the GHG emissions for the city. 
+Redidential buildings with 5 or more units, 20% by 2030.  12.9% of city GHG emissions from these buildings, even though only 7% of Chicagoans live in them.
+Industrial 20% by 2030, accounting for 16.6% of total GHG emissions for the city.
+Commercial 20% by 2035, accounting for 23.5% of total GHG emissions for the city. 
+
+Chicago's "Retrofit Chicago" page offers some resources for those who are hoping to make the change including connection to utility programs for energy efficiency, Inflation Reduction Act incentives, which may hnot longer be available, and other grant programs available. https://www.chicago.gov/city/en/sites/retrofit-chicago2/home/resources.html  
+
+Green Homes Chicago: https://www.chicago.gov/city/en/depts/doh/provdrs/homeowners/svcs/green-homes-chicago.html
+
+Green Homes Chicago provides free home energy upgrades and energy efficiency retrofits to income-eligible homeowners, including new insulation and heat pump heating and cooling systems. Elibile people were those who made up to 80% of Area Median Income of the Chicago-Naperville-Joliet, IL HUD Metro FMR Area. 
+Application was open for 10 days.
+- Household Size, income
+1, $67,150
+2, $76,750
+3, $86,350
+4, $95,900
+5, $103,600
+
+## Research Question
+
+What kinds of neighborhoods have the worst energy efficiency? What areas have the greatest energy efficiency outreach potential?
+
+## Approach
+
+- Used Energy Usage information from 2010, which aggregated from ComEd and People's Gas by Accentrue to the census block level. Electrical and gas usage data comprises 88 percent of Chicago's buildings in 2010. The electricity data comprises 68 percent of overall electrical usage in the city while gas data comprises 81 percent of all gas consumption in Chicago for 2010. While this information is old, it is the broadest available dataset from the City of Chicago on energy use as The Chicago Building Energy Use Benchmarking Ordinance calls on existing municipal, commercial, and residential buildings larger than 50,000 square feet to track whole-building energy use which covers less than 1% of Chicago’s buildings, which account for approximately 20% of total energy used by all buildings. https://data.cityofchicago.org/Environment-Sustainable-Development/Energy-Usage-2010/8yq3-m6wp/about_data 
+
+- Community Areas https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas/igwz-8jzy/about_data
+- Census blocks https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Blocks-2010/mfzt-js4n 
+- Median Household income by Census Tract: https://data.census.gov/ 
+
+STEP 1
+Merged the income data based on the Census Tract. Since blocks are smaller geographies, they are smaller geographies, we are assuming that the median income of the block is the same as the larger tracts.
+
+STEP 2
+Calculate the measures of energy efficiency. This is calculated at the block level by residential housing type (Single Famly, Multi Unit < 7 units, and Multi Unit 7+ Units). Interstingly, the data had information on percent renter occupied was for the block generally, but the average building age was specific to the building types in the block. Median income is tract level information so it is even more general.
+
+
+
+## Outcome
+
+## Streamlit App
+
+
+```{python}
+
+```
