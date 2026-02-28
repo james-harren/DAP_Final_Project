@@ -5,3 +5,9 @@ dependencies:
   - python=3.11
   - pandas
   - geopandas
+  - matplotlib
+  - numpy
+  - shapely
+  - altair
+  - warnings
+
