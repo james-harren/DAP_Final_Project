@@ -4,8 +4,5 @@ matplotlib
 numpy
 shapely
 altair
-warnings
-plotly.express
-json
+plotly
 streamlit
-os
