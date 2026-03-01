@@ -165,7 +165,7 @@ def mapper():
         color_continuous_scale="OrRd",
         fitbounds='geojson')
     fig.update_geos(visible=False)
-    st.plotly_chart(fig, width=True)
+    st.plotly_chart(fig, use_container_width=True)
     
 
 page_names_to_funcs = {
