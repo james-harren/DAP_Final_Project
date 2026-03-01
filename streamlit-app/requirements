@@ -1,0 +1,12 @@
+python=3.11
+pandas
+geopandas
+matplotlib
+numpy
+shapely
+altair
+warnings
+plotly.express
+json
+streamlit
+os
