@@ -3,6 +3,8 @@
 import streamlit as st
 import os
 
+BASE_DIR = os.path.dirname(__file__)
+
 st.set_page_config(page_title="Chicago Energy Efficiency Policy Tuner")
 
 # DATA LINKS
@@ -53,7 +55,7 @@ def corr():
         options=["Building Age", "Income", "Renter Status"]
         )
     
-    df = pd.read_csv('Energy_Use_ComArea.csv')
+    df = pd.read_csv(os.path.join(BASE_DIR, "Energy_Use_ComArea.csv"))
     axis_dict = {
         'Weatherization':'Seasonal Difference in Gas Use',
         'Appliance Upgrade':'Electricity Use per SQFT'
@@ -119,7 +121,7 @@ def mapper():
         options=["Renters", "Homeowners", "Neither"]
         )
 
-    data = pd.read_csv('Energy_Use_ComArea.csv')
+    data = pd.read_csv(os.path.join(BASE_DIR, "Energy_Use_ComArea.csv"))
     data['geometry'] = data['geometry'].apply(wkt.loads)
     city = gpd.GeoDataFrame(data, geometry='geometry', crs='EPSG:4326')
     
