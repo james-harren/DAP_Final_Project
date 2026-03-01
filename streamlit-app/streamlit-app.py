@@ -84,7 +84,6 @@ def corr():
     final = chart + line
     st.altair_chart(final)
 
-@st.cache_data
 def mapper():
     import streamlit as st
     import pandas as pd
