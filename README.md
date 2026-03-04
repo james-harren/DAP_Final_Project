@@ -40,9 +40,11 @@ LINK
 ## Data Sources
 
 1. Chicago Energy Usage 2010 database. https://data.cityofchicago.org/Environment-Sustainable-Development/Energy-Usage-2010/8yq3-m6wp/about_data 
+CHANGED FILE NAME TO: 
 
 2. Census data (U.S. Census Bureau, 2006-2010 American Community Survey) 
-- Downloaded from... https://data.census.gov/ filtering for Cook County + Census Tracts + Income and Poverty and then downloading for S1903 "Median Income in the Past 12 Months"
+- Downloaded from... https://data.census.gov/ filtering for "All Census Tracts within Cook County" + "Income and Poverty" + "2010" and then downloading for S1903 "Median Income in the Past 12 Months" took the data CSV file from the download to the folder.
+CHANGED FILE NAME TO:
  
 - Cleaned to remove extraneous columns to only include the following:
 GEO_ID	
@@ -50,6 +52,6 @@ NAME
 S1903_C01_001E	RENAMED TO Num_HH (i.e. Number of Households)
 S1903_C02_001E	RENAMED TO Med_Inc_HH (i.e. Median Household Income)
 
-- Community Areas https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas/igwz-8jzy/about_data
-- Census blocks https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Census-Blocks-2010/mfzt-js4n 
+3. Community Areas https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas/igwz-8jzy/about_data
+CHANGED FILE NAME TO: 
 
