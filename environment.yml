@@ -9,6 +9,7 @@ dependencies:
   - numpy
   - shapely
   - altair
-  - warnings
-  - os
+  - vl-convert-python
+  - jupyter
+  - pyyaml
 

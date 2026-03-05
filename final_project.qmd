@@ -1,7 +1,7 @@
 ---
 title: "Analysis of Energy Inefficiency in Chicago"
-author: "James Harren (GitHub user: james-harren)"
-date: "Section 1 - Mondays & Wednesdays at 9am"
+author: "James Harren (GitHub user: james-harren) - Section 1"
+date: "March 5, 2026"
 format:
   pdf:
     include-in-header:
@@ -29,18 +29,18 @@ import os
 from shapely import wkt
 import altair as alt
 alt.data_transformers.disable_max_rows()
-alt.renderers.enable("default")
+alt.renderers.enable("png")
 import warnings
 warnings.filterwarnings('ignore')
 ```
 
 ## Background
 
-The City of Chicago values energy efficiency as a means to decrease carbon emissions and improve comfort of homes for Chicagoans. The city's [Climate Action Plan](https://www.chicago.gov/content/dam/city/sites/climate-action-plan/documents/Chicago-CAP-071822.pdf) asserts that "Chicago’s residential, commercial, and industrial buildings account for nearly 69% of the City’s carbon footprint," indicating that the city should focus on the existing building stock to decrease carbon emissions. Additionally, it states that "It is important to prioritize energy efficiency retrofits prior to electrification and the transition to renewable energy to lower overall costs and maximize savings," emphesizing the important to energy efficiency. 
+The City of Chicago values energy efficiency as a means to decrease carbon emissions and improve comfort of homes for Chicagoans. The city's [Climate Action Plan](https://www.chicago.gov/content/dam/city/sites/climate-action-plan/documents/Chicago-CAP-071822.pdf) asserts that carbon emissions from existing buildings are substantial at 69% of total emissions, and energy efficiency programs are important to prioritize.. 
 
-Under the [Building Energy Use Benchmarking Ordinance](https://www.chicago.gov/city/en/depts/env/supp_info/energy-benchmarking.html), buildings over 50,000 square feet are required to report their energy use to the city. This effort is meant to encourage energy effciency across large buildings, but does not support energy efficiency of residential buildings, which account for over 27% of city wide carbon emissions according to the city's climate action plan. 
+Already the city, through the [Building Energy Use Benchmarking Ordinance](https://www.chicago.gov/city/en/depts/env/supp_info/energy-benchmarking.html), requries buildings over 50,000 square feet to report energy use as an energy efficiency initiative. 
 
-The city's Department of Housing adminsters a grant program that aims to help retrofit chicago homes, the [Green Homes Chicago Program](https://www.chicago.gov/city/en/depts/doh/provdrs/homeowners/svcs/green-homes-chicago.html). The program provides free home energy upgrades and energy efficiency retro fits for homeowners who make up to 80% of Area Median Income of the Chicago-Naperville-Joliet HUD Metro FMR Area. This year, the application was open in February 2026 for only ten days. This short application time indiactes that the program may be oversubscribed. Future iterations of the program may benefit from different program designs to achieve more energy efficiency benefits per grant dollar. Additionaly, it is important to know if the target grantee is the most 'efficient' target in terms of energy efficiency benefits that can be achieved per dollar. 
+The city's Department of Housing adminsters a grant program that aims to help retrofit chicago homes, the [Green Homes Chicago Program](https://www.chicago.gov/city/en/depts/doh/provdrs/homeowners/svcs/green-homes-chicago.html) which provides low income homeowners free energy efficiency upgrades. Future iterations of the program may benefit from different program designs to achieve more energy efficiency benefits per grant dollar. Additionaly, it is important to know if the target grantee is the most 'efficient' target in terms of energy efficiency benefits that can be achieved per dollar. 
 
 ## Research Question
 
@@ -52,11 +52,7 @@ In order to understand what kinds of groups may benefit from energy efficiency p
 
 Different energy efficiency metrics were calculated at the census block level. First, in order to estimate how insulated a building is, a difference in seasonal gas usage metric was calculated by taking the difference between January, the highest average gas use month, and August, the lowest average gas use month, and dividing by the square footage of the building stock in the census block to be able to compare across geographies. Second, in order to measure how inefficient appliances are, total electricity use for the year is divided by the square footage of the building stock int he census block to compare across geographies. 
 
-Then, different characterstics will be used to analyze what kinds of neighborhoods have the worst energy efficiency. The energy use data had information on average building age and percent of units rented in census blocks. The census data has infomration on the median income of census tracts in cook county. 
-
-So, in terms of data wrangling, the energy use data, after calculating the energy use metrics, were aggregated to the census block level averaging across residential building types, while weighting on square footage for both the energy efficiency metrics and average building age. Percent renter occupied was recorded as one metric block-wide. 
-
-Then income data were merged into the energy use data based on the GEOID for the census blocks, from the energy use data, and census tracts, from the census income data. This assumes that the median income of blocks are equal to that of the census tracts they are within. These data were then aggregated again to the community area level weighing the energy use metrics and average building age on square footage, and percent renter population and income data averaged weighted on population. Finally, geometry of the community areas were merged into the dataframe to form a final dataframe to visualize.
+Data were then combined with income data and aggregated to the community area level. The mean of energy efficiency metrics and average building age were weighted on square footage, and percent renter population and income were weighed on population. Finally, geography of the community areas were merged into the final dataset.
 
 ```{python}
 #| eval: true
@@ -247,6 +243,9 @@ energy_use_ca['ENERGY_WASTE_Q'] = pd.qcut(energy_use_ca['KWH_PER_SQFT'],q=5, lab
 So, what neighborhoods does the Green Homes Chicago Program target, and do these neighborhoods have the worst energy efficiency? The following scatter plot shows median income against the percent of renter population for each community area. The plot shows that as renter population deacreases income tends to increase. Additionally, the color shows a clear pattern that worse energy efficiency outcomes, as indicated by the seasonal difference in gas use, occur more often for lower income communitites, but there does not seem to be a correlation on renter composition of community areas. 
 
 ```{python}
+#| eval: true
+#| echo: false
+
 chart = alt.Chart(energy_use_ca).mark_circle(size=50).encode(
     x=alt.X('MED_INC:Q', title="Median Income"),
     y=alt.Y('PCT_RENT:Q', title="Renter Percentage"),
@@ -255,26 +254,9 @@ chart = alt.Chart(energy_use_ca).mark_circle(size=50).encode(
 display(chart)
 ```
 
-The follwing plot shows that in fact there is a slight negative correlation between renter composition and energy efficiency. Overall, it appears that low income homeowners are most likely to have the worst energy efficiency, as measured by the different in gas use between January and August per square foot. 
+A simple scatter plot of renter composition and the energy efficiency metric, provided in the dashboard below, shows that there is in fact a correlation between homeownership and poor energy efficiency. It appears that the Green Homes Chicago program appropriately targets grantees!
 
-```{python}
-#| eval: true
-#| echo: false
-
-chart = alt.Chart(energy_use_ca,
-                title = alt.TitleParams(text = ["Relationship Between Renter Makeup", "of Community Areas in Chicago Shows Slight Negative", "Correlation with Seasonal Difference in Gas Use"], align='left', anchor='start')).mark_circle().encode(
-    alt.X('PCT_RENT:Q', title="Percentage Renters"),
-    alt.Y('THERM_SPREAD:Q', title="Seasonal Difference in Gas Use (Therms per SQFT)")
-)
-
-line = chart.transform_regression(
-                        'PCT_RENT', 
-                        'THERM_SPREAD').mark_line(color="grey")
-
-display(chart + line)
-```
-
-The neighborhoods that would benefit the most from these programs are on the south and west sides based on a priority score. The priority score is the sum of quintiles of the energy efficiency metric used and characteristics prioritized characteristics, where a higher score indicates greater outreach potential. So, for the Green Homes Chicago program, the priority score is the sum of the seasonal difference in gas use metric quintile (5 being the most 'leaky'), the homeowner quintile (5 being greatest percentage of homeowners), and the low income quintile (5 being the median lowest income). Beyond outreach potential, this map could also be useful for gaining political support for new rounds of this program.
+The neighborhoods that would benefit the most from these programs are on the south and west sides based on a priority score. More information on how the priority score is calculated can be found in the dashboard below.
 
 ```{python}
 #| eval: true
@@ -305,8 +287,6 @@ plt.show()
 
 ## Streamlit App
 
-A dynamic dashboard allows officials to explore different constructions of energy efficiency plans. First, a page allows one to see if there is a correlation between an energy efficiency metric and a characteristic of the community. Then, different 'outreach maps' for the city can be constructed to analyze different constructions of energy effciency programs. 
+A dynamic dashboard allows officials to explore different constructions of energy efficiency plans.
 
 [Check out the dashboard here!](https://dap-final-chicago-energy.streamlit.app/) 
-
-Interestingly, the other proposed metric of energy use per square foot does not appear to be a meaningful energy efficiency metric as it may be more apt at understanding which neighborhoods use air conditioning more frequently. 
