@@ -14,11 +14,11 @@ def intro():
     st.write("# Chicago Energy Efficiency Policy Tuner")
     st.markdown(
     '''
-    Chicago aims to increase energy efficiency of the city's building stock as a climate change initiative. Some grants are available through the Green Homes Chicago program to support energy efficiency upgrades, however, future programs may want to be more focused.  
+    Chicago aims to increase energy efficiency of the city's building stock as a climate change initiative. Some grants are available through the Green Homes Chicago program to support energy efficiency upgrades, however, future programs may want to change criteria.  
 
-    Energy efficiency programs can focus on improving building insulation or upgrading wasteful applicances.
+    Energy efficiency programs can focus on improving building insulation, upgrading wasteful applicances, or other energy efficiency programs.
     
-    In order to more effectively target buildings that need upgrades, energy use data from 2010 for the city is analyzed to understand what kind of people or buildings tend to be more wasteful.
+    In order to more effectively target buildings that need upgrades or achieve different energy efficiency goals, energy use data from 2010 for the city is analyzed to understand what kind of people or buildings tend to be more wasteful.
     
     First Chicago can make their energy efficiency grants more specific in what they will fund. Potential policies are:
     - **Weatherization Policy**, funding insulation or window improvements in the city. This option is analyzed through examining the difference between the highest month's average gas use, January, and the lowest month's average gas use, August, and dividing by the square footage of the building. 
@@ -29,7 +29,7 @@ def intro():
     - **Median Household Income**
     - **Percent of Units Occupied by Renters**
 
-    The Policy Construction page allows officials to see what characteristics correlate with higher energy use for each potential policy. Then, the Outreach Priority Map page allows officials to understand what Community Areas in Chicago should be the focus of outreach. 
+    The Policy Construction page allows officials to see what characteristics correlate with poorer energy effciency for each potential policy. Then, the Outreach Priority Map page allows officials to understand what Community Areas in Chicago should be the focus of outreach. 
     '''
     )
 
