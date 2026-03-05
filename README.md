@@ -1,8 +1,10 @@
 # Chicago Energy Inefficiency Analysis
 
-This project analyzes where energy inefficient buildings are in the city, and 
+This project analyzes what kinds of neighborhoods have the worst energy efficiency and what neighborhoods are most likely to benefit from different energy efficiency policies.  
 
 ## Setup
+
+Make sure the correct environment is set up. Run the following in terminal:
 
 ```bash
 conda env create -f environment.yml
@@ -13,45 +15,37 @@ conda activate chi_energy_eff
 
 ```
 data/
-  raw-data/           # Raw data files
-    WHAT ARE
-  derived-data/       # Filtered data and output plots
-    WHAT ARE
+	external/           # Raw data files
+    		Energy_Usage_2010.csv 		# Chicago Energy Use
+		Chicago_CommunityAreas.csv 		#  Chicago Community Areas
+		ACS_Data.csv				#  Raw U.S. Census Data
+  	cleaned/           # Initial cleanup of Census Data
+    		ACS_Data_Clean.csv		#  Cleaned U.S. Census Data processed with preprocessing.py
 code/
-  preprocessing.py    # What does it do?
+  	preprocessing.py    # Removes non-data row and subsets and renames columns in Raw U.S. Census Data
+streamlit-app/
+	streamlit-app.py	# Python file needed to run streamlit in community cloud
+	Energy_Use_ComArea.csv	# Data needed to run streamlit app
+	requirements.txt	# Pip dependencies for the streamlit app
 ```
 
-## Usage
-
-1. Run preprocessing to filter data:
-   ```bash
-   python code/preprocessing.py
-   ```
-
-2. Generate the fire perimeter plot:
-   ```bash
-   python code/plot_fires.py
-   ```
-   
 ## Streamlit App
 
-LINK
+[Checkout this project's interactive dashboard!](https://dap-final-chicago-energy.streamlit.app/)
 
 ## Data Sources
 
-1. Chicago Energy Usage 2010 database. https://data.cityofchicago.org/Environment-Sustainable-Development/Energy-Usage-2010/8yq3-m6wp/about_data 
-CHANGED FILE NAME TO: 
+1. "Energy Usage 2010." *Chicago Data Portal*. Accessed March 4th, 2026, at https://data.cityofchicago.org/Environment-Sustainable-Development/Energy-Usage-2010/8yq3-m6wp/about_data
 
-2. Census data (U.S. Census Bureau, 2006-2010 American Community Survey) 
-- Downloaded from... https://data.census.gov/ filtering for "All Census Tracts within Cook County" + "Income and Poverty" + "2010" and then downloading for S1903 "Median Income in the Past 12 Months" took the data CSV file from the download to the folder.
-CHANGED FILE NAME TO:
- 
-- Cleaned to remove extraneous columns to only include the following:
-GEO_ID	
-NAME	
-S1903_C01_001E	RENAMED TO Num_HH (i.e. Number of Households)
-S1903_C02_001E	RENAMED TO Med_Inc_HH (i.e. Median Household Income)
+File saved as "Energy_Usage_2010.csv"
 
-3. Community Areas https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas/igwz-8jzy/about_data
-CHANGED FILE NAME TO: 
+2. U.S. Census Bureau. "2006-2010 American Community Survey." Accessed March 4th, 2026, at https://data.census.gov/
+
+Survey data S1903, "Median Income in the Past 12 Months" were downloaded for "All Census Tracts within Cook County" for "2010" using the U.S. Census Bureau's interactive data download site above. 
+
+File saved as "ACS_Data.csv"
+
+3. "Boundaries - Community Areas." *Chicago Data Portal* Accessed March 4th, 2026 at https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas/igwz-8jzy/about_data
+
+File saved as "Chicago_CommunityAreas.csv"
 
