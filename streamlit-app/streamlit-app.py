@@ -57,7 +57,7 @@ def corr():
     
     df = pd.read_csv(os.path.join(BASE_DIR, "Energy_Use_ComArea.csv"))
     axis_dict = {
-        'Weatherization':'Seasonal Difference in Gas Use',
+        'Weatherization':'Seasonal Difference in Gas Use (Therms per SQFT)',
         'Appliance Upgrade':'Electricity Use per SQFT'
     }
     policy_dict = {
@@ -120,7 +120,15 @@ def mapper():
         key="renter",
         options=["Renters", "Homeowners", "Neither"]
         )
-
+    score = f'Priority Score = {policy} Quintile'
+    if ~(building == 'Neither'):
+        score += f' + {building} Quintile'
+    if ~(income == 'Neither'):
+        score += f' + {income} Quintile'
+    if ~(renter == 'Neither'):
+        score += f' + {renter} Quintile'
+    st.write(f'The Priority Score is the following based on your selection: *{score}*')
+    st.write('A higher score indicates more opportunity for efficiency and uptake in the program. The higher the quintile, the greater presence those characteristics are present or worse the energy efficiency metric.')
     data = pd.read_csv(os.path.join(BASE_DIR, "Energy_Use_ComArea.csv"))
     data['geometry'] = data['geometry'].apply(wkt.loads)
     city = gpd.GeoDataFrame(data, geometry='geometry', crs='EPSG:4326')
