@@ -15,18 +15,18 @@ conda activate chi_energy_eff
 
 ```
 data/
-	external/           # Raw data files
+	external/           		# Raw data files
     		Energy_Usage_2010.csv 		# Chicago Energy Use
-		Chicago_CommunityAreas.csv 		#  Chicago Community Areas
-		ACS_Data.csv				#  Raw U.S. Census Data
-  	cleaned/           # Initial cleanup of Census Data
-    		ACS_Data_Clean.csv		#  Cleaned U.S. Census Data processed with preprocessing.py
+		Chicago_CommunityAreas.csv 		# Chicago Community Areas
+		ACS_Data.csv					# Raw U.S. Census Data
+  	cleaned/            	# Initial cleanup of Census Data
+    		ACS_Data_Clean.csv			# Cleaned U.S. Census Data processed with preprocessing.py
 code/
   	preprocessing.py    # Removes non-data row and subsets and renames columns in Raw U.S. Census Data
 streamlit-app/
-	streamlit-app.py	# Python file needed to run streamlit in community cloud
+	streamlit-app.py			# Python file needed to run streamlit in community cloud
 	Energy_Use_ComArea.csv	# Data needed to run streamlit app
-	requirements.txt	# Pip dependencies for the streamlit app
+	requirements.txt			# Pip dependencies for the streamlit app
 ```
 
 ## Streamlit App

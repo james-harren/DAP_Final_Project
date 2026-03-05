@@ -10,8 +10,5 @@ dependencies:
   - shapely
   - altair
   - warnings
-  - plotly.express
-  - json
-  - streamlit
   - os
 
