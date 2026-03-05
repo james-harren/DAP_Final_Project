@@ -14,8 +14,6 @@ format:
         \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 editor: source
 execute-dir: project
-execute: 
-    echo: true
 ---
 
 ```{python}
@@ -27,6 +25,7 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from shapely import wkt
 import altair as alt
 alt.data_transformers.disable_max_rows()
@@ -37,112 +36,252 @@ warnings.filterwarnings('ignore')
 
 ## Background
 
-The City's Climate Action Plan: https://www.chicago.gov/content/dam/city/sites/climate-action-plan/documents/Chicago-CAP-071822.pdf 
+The City of Chicago values energy efficiency as a means to decrease carbon emissions and improve comfort of homes for Chicagoans. The city's [Climate Action Plan](https://www.chicago.gov/content/dam/city/sites/climate-action-plan/documents/Chicago-CAP-071822.pdf) asserts that "Chicago’s residential, commercial, and industrial buildings account for nearly 69% of the City’s carbon footprint," indicating that the city should focus on the existing building stock to decrease carbon emissions. Additionally, it states that "It is important to prioritize energy efficiency retrofits prior to electrification and the transition to renewable energy to lower overall costs and maximize savings," emphesizing the important to energy efficiency. 
 
-"Chicago’s residential, commercial, and industrial buildings account for nearly 69% of the City’s carbon footprint."
-"It is important to prioritize energy efficiency retrofits prior to electrification and the transition to renewable energy to lower overall costs and maximize savings."
+Under the [Building Energy Use Benchmarking Ordinance](https://www.chicago.gov/city/en/depts/env/supp_info/energy-benchmarking.html), buildings over 50,000 square feet are required to report their energy use to the city. This effort is meant to encourage energy effciency across large buildings, but does not support energy efficiency of residential buildings, which account for over 27% of city wide carbon emissions according to the city's climate action plan. 
 
-Goals: 
-Residential buildings with fewer than 4 units, 50% by 2040. 93% of Chicagoans live in these buildings which account for 14% of the GHG emissions for the city. 
-Redidential buildings with 5 or more units, 20% by 2030.  12.9% of city GHG emissions from these buildings, even though only 7% of Chicagoans live in them.
-Industrial 20% by 2030, accounting for 16.6% of total GHG emissions for the city.
-Commercial 20% by 2035, accounting for 23.5% of total GHG emissions for the city. 
-
-Chicago's "Retrofit Chicago" page offers some resources for those who are hoping to make the change including connection to utility programs for energy efficiency, Inflation Reduction Act incentives, which may hnot longer be available, and other grant programs available. https://www.chicago.gov/city/en/sites/retrofit-chicago2/home/resources.html  
-
-Green Homes Chicago: https://www.chicago.gov/city/en/depts/doh/provdrs/homeowners/svcs/green-homes-chicago.html
-
-Green Homes Chicago provides free home energy upgrades and energy efficiency retrofits to income-eligible homeowners, including new insulation and heat pump heating and cooling systems. Elibile people were those who made up to 80% of Area Median Income of the Chicago-Naperville-Joliet, IL HUD Metro FMR Area. 
-Application was open for 10 days.
-- Household Size, income
-1, $67,150
-2, $76,750
-3, $86,350
-4, $95,900
-5, $103,600
+The city's Department of Housing adminsters a grant program that aims to help retrofit chicago homes, the [Green Homes Chicago Program](https://www.chicago.gov/city/en/depts/doh/provdrs/homeowners/svcs/green-homes-chicago.html). The program provides free home energy upgrades and energy efficiency retro fits for homeowners who make up to 80% of Area Median Income of the Chicago-Naperville-Joliet HUD Metro FMR Area. This year, the application was open in February 2026 for only ten days. This short application time indiactes that the program may be oversubscribed. Future iterations of the program may benefit from different program designs to achieve more energy efficiency benefits per grant dollar. Additionaly, it is important to know if the target grantee is the most 'efficient' target in terms of energy efficiency benefits that can be achieved per dollar. 
 
 ## Research Question
 
-What kinds of neighborhoods have the worst energy efficiency? What areas have the greatest energy efficiency outreach potential?
+What kinds of neighborhoods have the worst energy efficiency and what areas have the greatest energy efficiency outreach potential?
 
 ## Approach
 
-- Used Energy Usage information from 2010, which aggregated from ComEd and People's Gas by Accentrue to the census block level. Electrical and gas usage data comprises 88 percent of Chicago's buildings in 2010. The electricity data comprises 68 percent of overall electrical usage in the city while gas data comprises 81 percent of all gas consumption in Chicago for 2010. While this information is old, it is the broadest available dataset from the City of Chicago on energy use as The Chicago Building Energy Use Benchmarking Ordinance calls on existing municipal, commercial, and residential buildings larger than 50,000 square feet to track whole-building energy use which covers less than 1% of Chicago’s buildings, which account for approximately 20% of total energy used by all buildings. https://data.cityofchicago.org/Environment-Sustainable-Development/Energy-Usage-2010/8yq3-m6wp/about_data 
+In order to understand what kinds of groups may benefit from energy efficiency programs the most, energy data from the City of Chicago and income data from the American Community Survey from the U.S. Census were analyzed at the Community Area level. Chicago has published energy use data from 2010 aggregated to the census block level and includes both electricity and gas use aggregated to the census block level and information on the buildings within the census block. 
 
-- Community Areas https://data.cityofchicago.org/Facilities-Geographic-Boundaries/Boundaries-Community-Areas/igwz-8jzy/about_data
+Different energy efficiency metrics were calculated at the census block level. First, in order to estimate how insulated a building is, a difference in seasonal gas usage metric was calculated by taking the difference between January, the highest average gas use month, and August, the lowest average gas use month, and dividing by the square footage of the building stock in the census block to be able to compare across geographies. Second, in order to measure how inefficient appliances are, total electricity use for the year is divided by the square footage of the building stock int he census block to compare across geographies. 
 
-- Median Household income by Census Tract: https://data.census.gov/ 
+Then, different characterstics will be used to analyze what kinds of neighborhoods have the worst energy efficiency. The energy use data had information on average building age and percent of units rented in census blocks. The census data has infomration on the median income of census tracts in cook county. 
+
+So, in terms of data wrangling, the energy use data, after calculating the energy use metrics, were aggregated to the census block level averaging across residential building types, while weighting on square footage for both the energy efficiency metrics and average building age. Percent renter occupied was recorded as one metric block-wide. 
+
+Then income data were merged into the energy use data based on the GEOID for the census blocks, from the energy use data, and census tracts, from the census income data. This assumes that the median income of blocks are equal to that of the census tracts they are within. These data were then aggregated again to the community area level weighing the energy use metrics and average building age on square footage, and percent renter population and income data averaged weighted on population. Finally, geometry of the community areas were merged into the dataframe to form a final dataframe to visualize.
+
+```{python}
+#| eval: true
+#| echo: false
+
+energy_use = pd.read_csv('data/external/Energy_Usage_2010.csv')
+
+# RESIDENTIAL PROPERTIES
+energy_use = energy_use[energy_use["BUILDING TYPE"]=='Residential']
+
+# KWH PER SQFT
+energy_use['TOTAL KWH'] = energy_use['TOTAL KWH'].str.replace(',', '').astype(float)
+energy_use['KWH TOTAL SQFT'] = energy_use['KWH TOTAL SQFT'].str.replace(',', '').astype(float)
+energy_use['KWH PER SQFT'] = energy_use['TOTAL KWH']/energy_use['KWH TOTAL SQFT']
+
+# THERMS PER SQFT
+energy_use['TOTAL THERMS'] = energy_use['TOTAL THERMS'].str.replace(',', '').astype(float)
+energy_use['THERMS TOTAL SQFT'] = energy_use['THERMS TOTAL SQFT'].str.replace(',', '').astype(float)
+energy_use['THERMS PER SQFT'] = energy_use['TOTAL THERMS']/energy_use['THERMS TOTAL SQFT']
+
+# SEASONALITY CHECK
+'''cols = list(energy_use.columns)
+kwh_list = []
+for mo in range(4, 16):
+    kwh_mo = energy_use[cols[mo]].str.replace(',', '').astype(float)
+    series = kwh_mo/energy_use['KWH TOTAL SQFT']
+    average = series.mean()
+    kwh_list.append(average)
+
+therms_list = []
+for mo in range(19, 31):
+    therm_mo = energy_use[cols[mo]].str.replace(',', '').astype(float)
+    series = therm_mo/energy_use['THERMS TOTAL SQFT']
+    average = series.mean()
+    therms_list.append(average)
+
+months_avgs = pd.DataFrame({
+    'Month': ['jan', 'feb', 'mar', 'april','may',
+              'june','july','aug', 'sept', 'oct','nov','dec'],
+    'KWH': kwh_list,
+    'THERMS': therms_list,
+})'''
+# OUTCOME
+# Found that highest KWH per SQFT is in July, lowest in April
+# Found that highest THERMS per SQFT is in January, lowest in August
+
+energy_use["THERM SPREAD"] = (energy_use['THERM JANUARY 2010'].str.replace(',', '').astype(float) - energy_use[
+                                    'THERM AUGUST 2010'].str.replace(',', '').astype(float))/energy_use['THERMS TOTAL SQFT']
+energy_use["KWH SPREAD"] = (energy_use['KWH JULY 2010'].str.replace(',', '').astype(float) - energy_use[
+                                    'KWH APRIL 2010'].str.replace(',', '').astype(float))/energy_use['KWH TOTAL SQFT']
+
+"""Energy Efficiency Measures Are:
+THERM SPREAD - THIS IS MORE IMPORTANT/RELEVANT
+KWH SPREAD
+THERMS PER SQFT
+KWH PER SQFT - THIS IS MORE IMPORTANT/RELEVANT"""
+
+# AGGREGATE MEASURES BETWEEN RESIDENTIAL HOUSE TYPES TO BLOCKWIDE
+# Only occupied properties
+energy_use['OCCUPIED HOUSING UNITS'] = energy_use['OCCUPIED HOUSING UNITS'].str.replace(',', '').astype(float)
+energy_use['OCCUPIED HOUSING UNITS'] = energy_use['OCCUPIED HOUSING UNITS'].fillna(0)
+energy_use = energy_use[~(energy_use['OCCUPIED HOUSING UNITS']==0)]
+
+def therm_weighted(x):
+    return np.average(x, weights=energy_use.loc[x.index, 'THERMS TOTAL SQFT'])
+def kwh_weighted(x):
+    return np.average(x, weights=energy_use.loc[x.index, 'KWH TOTAL SQFT'])
+
+energy_use['TOTAL POPULATION'] = energy_use['TOTAL POPULATION'].str.replace(',', '').astype(float)
+
+energy_use_cb = energy_use.groupby('CENSUS BLOCK').agg(
+    THERM_SPREAD=('THERM SPREAD', therm_weighted),
+    THERMS_PER_SQFT = ('THERMS PER SQFT', therm_weighted),
+    THERMS_BUILDING_AGE = ('AVERAGE BUILDING AGE', therm_weighted),
+    KWH_SPREAD = ('KWH SPREAD', kwh_weighted),
+    KWH_PER_SQFT = ('KWH PER SQFT', kwh_weighted),
+    KWH_BUILDING_AGE = ('AVERAGE BUILDING AGE', kwh_weighted),
+    PCT_RENT = ('RENTER-OCCUPIED HOUSING PERCENTAGE', np.mean),
+    POPULATION = ('TOTAL POPULATION', np.mean),
+    THERMS_SQFT = ('THERMS TOTAL SQFT', np.sum),
+    KWH_SQFT = ('KWH TOTAL SQFT', np.sum)
+)
+
+energy_use_cb.reset_index(inplace=True)
+
+# Add back community areas
+comm_areas = energy_use[['COMMUNITY AREA NAME', 'CENSUS BLOCK']]
+comm_areas = comm_areas.drop_duplicates(subset=['CENSUS BLOCK'])
+energy_use_cb = pd.merge(energy_use_cb, comm_areas, 
+                         on='CENSUS BLOCK', how='left')
 
 
+# INCOME DATA FROM CENSUS
+med_incs = pd.read_csv('data/cleaned/ACS_Data_Clean.csv')
 
-STEP 1
-Calculate the measures of energy efficiency. This is calculated at the block level by residential housing type (Single Famly, Multi Unit < 7 units, and Multi Unit 7+ Units). 
+# EXTRACT CENSUS TRACT ID
+med_incs['TRACT ID'] = med_incs['GEO_ID'].str[-6:]
 
-Found that highest KWH per SQFT is in July, lowest in April
-Found that highest THERMS per SQFT is in January, lowest in August
+energy_use_cb['CENSUS BLOCK'] = energy_use_cb['CENSUS BLOCK'].astype(int).astype(str)
+energy_use_cb['TRACT ID'] = energy_use_cb['CENSUS BLOCK'].str[5:11]
 
-Interstingly, the data had information on percent renter occupied was for the block generally, but the average building age was specific to the building types in the block. Median income is tract level information so it is even more general.
+# COMBINE
+energy_use_cb = pd.merge(energy_use_cb, med_incs, on="TRACT ID", how='left')
+energy_use_cb['Med_Inc_HH'] = energy_use_cb['Med_Inc_HH'].astype(int)
 
-Step 2
-Take average at the block level weighted on square footage. 
+# AGGREGATE TO COMMUNITY AREA LEVEL
 
-STEP 3
-Merged the income data based on the Census Tract. Since blocks are smaller geographies, they are smaller geographies, we are assuming that the median income of the block is the same as the larger tracts.
+energy_use_cb = energy_use_cb.fillna(0)
 
-Step 4
-Then aggregated to Community Area level weighted on populaiton.
+def therm_weighted_cb(x):
+    return np.average(x, weights=energy_use_cb.loc[x.index, 'THERMS_SQFT'])
+def kwh_weighted_cb(x):
+    return np.average(x, weights=energy_use_cb.loc[x.index, 'KWH_SQFT'])
+def pop_weighted_cd(x):
+    return np.average(x, weights=energy_use_cb.loc[x.index, 'POPULATION'])
 
-Aggregation issue...
+energy_use_ca = energy_use_cb.groupby('COMMUNITY AREA NAME').agg(
+    THERM_SPREAD=('THERM_SPREAD', therm_weighted_cb),
+    THERMS_PER_SQFT = ('THERMS_PER_SQFT', therm_weighted_cb),
+    THERMS_BUILDING_AGE = ('THERMS_BUILDING_AGE', therm_weighted_cb),
+    KWH_SPREAD = ('KWH_SPREAD', kwh_weighted_cb),
+    KWH_PER_SQFT = ('KWH_PER_SQFT', kwh_weighted_cb),
+    KWH_BUILDING_AGE = ('KWH_BUILDING_AGE', kwh_weighted_cb),
+    PCT_RENT = ('PCT_RENT', pop_weighted_cd),
+    MED_INC = ('Med_Inc_HH', pop_weighted_cd),
+    POPULATION = ('POPULATION', np.sum),
+    THERMS_SQFT = ('THERMS_SQFT', np.sum),
+    KWH_SQFT = ('KWH_SQFT', np.sum)
+)
+
+energy_use_ca = energy_use_ca.reset_index()
+
+# ADD GEOGRAPHY
+community = pd.read_csv('data/external/Chicago_CommunityAreas.csv')
+
+community['COMMUNITY'] = community['COMMUNITY'].str.lower()
+energy_use_ca['COMMUNITY AREA NAME'] = energy_use_ca['COMMUNITY AREA NAME'].str.lower()
+community = community.rename(columns={'COMMUNITY': 'COMMUNITY AREA NAME'})
+
+renaming = {
+    'lakeview':'lake view',
+    'o\'hare': 'ohare'
+}
+energy_use_ca['COMMUNITY AREA NAME'] = energy_use_ca['COMMUNITY AREA NAME'].replace(renaming)
+
+energy_use_ca = pd.merge(energy_use_ca, community, on="COMMUNITY AREA NAME").rename(columns={'the_geom':'geometry'})
+
+# CLEANING UP
+energy_use_ca['Building_Age'] = (energy_use_ca['THERMS_BUILDING_AGE']+energy_use_ca['KWH_BUILDING_AGE'])/2
+energy_use_ca = energy_use_ca[['COMMUNITY AREA NAME', 'THERM_SPREAD', 'THERMS_PER_SQFT',
+        'KWH_SPREAD', 'KWH_PER_SQFT', 
+       'PCT_RENT', 'MED_INC', 'Building_Age', 'POPULATION', 'THERMS_SQFT', 'KWH_SQFT',
+       'geometry']]
+
+renaming = {
+    'lake view': 'lakeview',
+    'ohare': 'o\'hare'
+}
+
+energy_use_ca['COMMUNITY AREA NAME'] = energy_use_ca['COMMUNITY AREA NAME'
+                                                     ].replace(renaming).str.title()
+
+# MAKE QUARTILES FOR HEATMAPPING
+
+flip_map = {
+    1: 5,
+    2: 4,
+    3: 3,
+    4: 2,
+    5: 1
+}
+
+energy_use_ca['RENTER_Q'] = pd.qcut(energy_use_ca['PCT_RENT'],q=5, labels=False)+1
+energy_use_ca['HOMEOWNER_Q'] = energy_use_ca['RENTER_Q'].replace(flip_map)
+energy_use_ca['OLD_BUILD_Q'] = pd.qcut(energy_use_ca['Building_Age'],q=5, labels=False)+1
+energy_use_ca['NEW_BUILD_Q'] = energy_use_ca['OLD_BUILD_Q'].replace(flip_map)
+energy_use_ca['HIGH_INC_Q'] = pd.qcut(energy_use_ca['MED_INC'],q=5, labels=False)+1
+energy_use_ca['LOW_INC_Q'] = energy_use_ca['HIGH_INC_Q'].replace(flip_map)
+energy_use_ca['HEAT_LEAK_Q'] = pd.qcut(energy_use_ca['THERM_SPREAD'],q=5, labels=False)+1
+energy_use_ca['ENERGY_WASTE_Q'] = pd.qcut(energy_use_ca['KWH_PER_SQFT'],q=5, labels=False)+1
+
+#FINAL DF is ENERGY_USE_CA
+```
+
 
 ## Outcome
 
-Talk about the correlations between them and how different kinds of policies make different kinds of sense. 
+So, what neighborhoods does the Green Homes Chicago Program target, and do these neighborhoods have the worst energy efficiency? The following scatter plot shows median income against the percent of renter population for each community area. The plot shows that as renter population deacreases income tends to increase. Additionally, the color shows a clear pattern that worse energy efficiency outcomes, as indicated by the seasonal difference in gas use, occur more often for lower income communitites, but there does not seem to be a correlation on renter composition of community areas. 
 
 ```{python}
-#| eval: true
-#| echo: false
-
-data = pd.read_csv('data/cleaned/Energy_Use_ComArea.csv')
-
-chart = alt.Chart(data,
-                title = alt.TitleParams(text = ["Relationship Between Median Household Income", "of Community Areas in Chicago Shows Slight Positive", "Correlation with Electricity Use"], align='left', anchor='start')).mark_circle().encode(
-    alt.X('MED_INC:Q', title="Median Income"),
-    alt.Y('KWH_PER_SQFT:Q', title="KWH Per Square Foot")
+chart = alt.Chart(energy_use_ca).mark_circle(size=50).encode(
+    x=alt.X('MED_INC:Q', title="Median Income"),
+    y=alt.Y('PCT_RENT:Q', title="Renter Percentage"),
+    color=alt.Color('THERM_SPREAD:Q', scale=alt.Scale(scheme='viridis'), title=["Seasonal Difference", "in Gas Use", "(Therms per SQFT)"])
 )
-
-line = chart.transform_regression(
-                        'MED_INC', 
-                        'KWH_PER_SQFT').mark_line(color="grey")
-
-display(chart + line)
+display(chart)
 ```
 
-Show correlation plot. The stramlit app allows it to be more staight forward to compare.
+The follwing plot shows that in fact there is a slight negative correlation between renter composition and energy efficiency. Overall, it appears that low income homeowners are most likely to have the worst energy efficiency, as measured by the different in gas use between January and August per square foot. 
 
 ```{python}
 #| eval: true
 #| echo: false
 
-chart = alt.Chart(data,
-                title = alt.TitleParams(text = ["Relationship Between Median Household Income", "of Community Areas in Chicago Shows Negative", "Correlation with Seasonal Difference in Gas Use"], align='left', anchor='start')).mark_circle().encode(
-    alt.X('MED_INC:Q', title="Median Income"),
-    alt.Y('THERM_SPREAD:Q', title="Seasonal Difference in Gas Use")
+chart = alt.Chart(energy_use_ca,
+                title = alt.TitleParams(text = ["Relationship Between Renter Makeup", "of Community Areas in Chicago Shows Slight Negative", "Correlation with Seasonal Difference in Gas Use"], align='left', anchor='start')).mark_circle().encode(
+    alt.X('PCT_RENT:Q', title="Percentage Renters"),
+    alt.Y('THERM_SPREAD:Q', title="Seasonal Difference in Gas Use (Therms per SQFT)")
 )
 
 line = chart.transform_regression(
-                        'MED_INC', 
+                        'PCT_RENT', 
                         'THERM_SPREAD').mark_line(color="grey")
 
 display(chart + line)
 ```
 
+The neighborhoods that would benefit the most from these programs are on the south and west sides based on a priority score. The priority score is the sum of quintiles of the energy efficiency metric used and characteristics prioritized characteristics, where a higher score indicates greater outreach potential. So, for the Green Homes Chicago program, the priority score is the sum of the seasonal difference in gas use metric quintile (5 being the most 'leaky'), the homeowner quintile (5 being greatest percentage of homeowners), and the low income quintile (5 being the median lowest income). Beyond outreach potential, this map could also be useful for gaining political support for new rounds of this program.
 
 ```{python}
 #| eval: true
 #| echo: false
 
-data['geometry'] = data['geometry'].apply(wkt.loads)
-city = gpd.GeoDataFrame(data, geometry='geometry', crs='EPSG:23304')
+energy_use_ca['geometry'] = energy_use_ca['geometry'].apply(wkt.loads)
+city = gpd.GeoDataFrame(energy_use_ca, geometry='geometry', crs='EPSG:23304')
 
 energy_measure = 'HEAT_LEAK_Q'
 rent_measure = 'HOMEOWNER_Q'
@@ -164,11 +303,10 @@ plt.show()
 
 ```
 
-Show plot of existing policy to show where to go. 
-
 ## Streamlit App
 
+A dynamic dashboard allows officials to explore different constructions of energy efficiency plans. First, a page allows one to see if there is a correlation between an energy efficiency metric and a characteristic of the community. Then, different 'outreach maps' for the city can be constructed to analyze different constructions of energy effciency programs. 
 
-```{python}
+[Check out the dashboard here!](https://dap-final-chicago-energy.streamlit.app/) 
 
-```
+Interestingly, the other proposed metric of energy use per square foot does not appear to be a meaningful energy efficiency metric as it may be more apt at understanding which neighborhoods use air conditioning more frequently. 

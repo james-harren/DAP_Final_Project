@@ -25,7 +25,7 @@ code/
   	preprocessing.py    # Removes non-data row and subsets and renames columns in Raw U.S. Census Data
 streamlit-app/
 	streamlit-app.py			# Python file needed to run streamlit in community cloud
-	Energy_Use_ComArea.csv	# Data needed to run streamlit app
+	Energy_Use_ComArea.csv		# Data needed to run streamlit app
 	requirements.txt			# Pip dependencies for the streamlit app
 ```
 
