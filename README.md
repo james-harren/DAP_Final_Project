@@ -33,6 +33,8 @@ streamlit-app/
 
 [Checkout this project's interactive dashboard!](https://dap-final-chicago-energy.streamlit.app/)
 
+Please note that Streamlit Apps hosted on the community cloud, as this one is, must be 'woken up' when inactive for more than 24 hours, so its initial loading time may be longer than usual. 
+
 ## Data Sources
 
 1. "Energy Usage 2010." *Chicago Data Portal*. Accessed March 4th, 2026, at https://data.cityofchicago.org/Environment-Sustainable-Development/Energy-Usage-2010/8yq3-m6wp/about_data
